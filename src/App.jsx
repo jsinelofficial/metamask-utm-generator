@@ -124,13 +124,16 @@ function App() {
       return customUrl;
     }
     
-    // For URLs ending with ?, don't append path (they're ready for params)
+    // For URLs ending with ?, append path directly (no slash)
     if (urlType && urlType.endsWith('?')) {
-      // Remove the trailing ? as we'll add it back when adding params
+      if (urlPath) {
+        return `${urlType}${urlPath}`;
+      }
+      // Remove trailing ? if no path provided
       return urlType.slice(0, -1);
     }
     
-    // For preset URLs, append the path if provided
+    // For preset URLs, append the path with slash if provided
     if (urlType && urlPath) {
       // Remove leading slash from path if present to avoid double slashes
       const cleanPath = urlPath.startsWith('/') ? urlPath.substring(1) : urlPath;
@@ -281,34 +284,25 @@ function App() {
               </select>
             </div>
 
-            {urlType && urlType !== 'custom' && !urlType.endsWith('?') && (
+            {urlType && urlType !== 'custom' && (
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Path (optional)
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                    <span className="text-gray-400 text-sm">{urlType}/</span>
+                    <span className="text-gray-400 text-sm">
+                      {urlType.endsWith('?') ? urlType : `${urlType}/`}
+                    </span>
                   </div>
                   <input
                     type="text"
                     value={urlPath}
                     onChange={(e) => setUrlPath(e.target.value)}
-                    placeholder="market/superbowl-2026"
+                    placeholder={urlType.endsWith('?') ? 'referral=campaign123' : 'market/superbowl-2026'}
                     style={{ paddingLeft: `${urlType.length * 7.5 + 20}px` }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
-                </div>
-              </div>
-            )}
-
-            {urlType && urlType.endsWith('?') && (
-              <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Path (optional)
-                </label>
-                <div className="w-full px-4 py-2 border border-gray-200 rounded-md bg-gray-50">
-                  <span className="text-gray-400 text-sm">{urlType}</span>
                 </div>
               </div>
             )}
