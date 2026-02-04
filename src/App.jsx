@@ -4,6 +4,7 @@ function App() {
   // Form state
   const [user, setUser] = useState('');
   const [urlType, setUrlType] = useState('');
+  const [urlPath, setUrlPath] = useState('');
   const [customUrl, setCustomUrl] = useState('');
   const [jiraTicket, setJiraTicket] = useState('');
   const [campaignName, setCampaignName] = useState('');
@@ -122,6 +123,14 @@ function App() {
     if (urlType === 'custom') {
       return customUrl;
     }
+    
+    // For preset URLs, append the path if provided
+    if (urlType && urlPath) {
+      // Remove leading slash from path if present to avoid double slashes
+      const cleanPath = urlPath.startsWith('/') ? urlPath.substring(1) : urlPath;
+      return `${urlType}/${cleanPath}`;
+    }
+    
     return urlType;
   };
 
@@ -196,6 +205,7 @@ function App() {
   const clearAll = () => {
     setUser('');
     setUrlType('');
+    setUrlPath('');
     setCustomUrl('');
     setJiraTicket('');
     setCampaignName('');
@@ -264,6 +274,24 @@ function App() {
                 ))}
               </select>
             </div>
+
+            {urlType && urlType !== 'custom' && (
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Path (optional)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 text-sm whitespace-nowrap">{urlType}/</span>
+                  <input
+                    type="text"
+                    value={urlPath}
+                    onChange={(e) => setUrlPath(e.target.value)}
+                    placeholder="market/superbowl-2026"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+            )}
 
             {urlType === 'custom' && (
               <div className="mb-4">
