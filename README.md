@@ -227,5 +227,3 @@ For issues or feature requests, contact the Growth Marketing team or submit feed
 ## License
 
 Internal MetaMask tool - not for public distribution.
-"# metamask-utm-generator" 
-"# metamask-utm-generator" 
