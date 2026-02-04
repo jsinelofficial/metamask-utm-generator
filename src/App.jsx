@@ -23,9 +23,9 @@ function App() {
   const urlTypes = [
     { value: 'https://metamask.io', label: 'Web - metamask.io' },
     { value: 'https://portfolio.metamask.io', label: 'Web - Portfolio' },
-    { value: 'metamask://predict', label: 'Mobile Deeplink - Predict' },
-    { value: 'metamask://swap', label: 'Mobile Deeplink - Swap' },
-    { value: 'metamask://buy', label: 'Mobile Deeplink - Buy' },
+    { value: 'https://link.metamask.io/predict?', label: 'Mobile Deeplink - Predict' },
+    { value: 'https://link.metamask.io/swap?', label: 'Mobile Deeplink - Swap' },
+    { value: 'https://link.metamask.io/buy?', label: 'Mobile Deeplink - Buy' },
     { value: 'metamask://browser', label: 'Mobile Deeplink - Browser' },
     { value: 'custom', label: 'Custom URL' }
   ];
@@ -122,6 +122,12 @@ function App() {
   const getDestinationUrl = () => {
     if (urlType === 'custom') {
       return customUrl;
+    }
+    
+    // For URLs ending with ?, don't append path (they're ready for params)
+    if (urlType && urlType.endsWith('?')) {
+      // Remove the trailing ? as we'll add it back when adding params
+      return urlType.slice(0, -1);
     }
     
     // For preset URLs, append the path if provided
@@ -275,20 +281,34 @@ function App() {
               </select>
             </div>
 
-            {urlType && urlType !== 'custom' && (
+            {urlType && urlType !== 'custom' && !urlType.endsWith('?') && (
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Path (optional)
                 </label>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400 text-sm whitespace-nowrap">{urlType}/</span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                    <span className="text-gray-400 text-sm">{urlType}/</span>
+                  </div>
                   <input
                     type="text"
                     value={urlPath}
                     onChange={(e) => setUrlPath(e.target.value)}
                     placeholder="market/superbowl-2026"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    style={{ paddingLeft: `${urlType.length * 7.5 + 20}px` }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
+                </div>
+              </div>
+            )}
+
+            {urlType && urlType.endsWith('?') && (
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Path (optional)
+                </label>
+                <div className="w-full px-4 py-2 border border-gray-200 rounded-md bg-gray-50">
+                  <span className="text-gray-400 text-sm">{urlType}</span>
                 </div>
               </div>
             )}
